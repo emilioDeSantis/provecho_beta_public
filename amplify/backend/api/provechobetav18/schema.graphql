@@ -1,0 +1,137 @@
+type Chef
+    @model 
+    @key(name: "byName", fields: ["name"], queryField: "chefsByName")
+    @key(name: "byUsername", fields: ["username"], queryField: "chefsByUsername")
+    {
+    id: ID!
+    username: String!
+    createdAt: AWSDateTime!
+    lastUploadDate: AWSDateTime
+    name: String!
+    image: String!
+    biography: String!
+    n_followers: Int!
+    n_following: Int!
+    n_remakes: Int!
+}
+
+enum FollowType {
+    REQUEST
+    FOLLOW
+}
+
+type Follow 
+    @model 
+    @key(fields: ["followerID", "idolID"])
+    @key(name: "byIdol", fields: ["idolID", "followerID"], queryField: "followsByIdol")
+    {
+    type: FollowType!
+    followerID: ID!
+    idolID: ID!
+    follower: Chef! @connection(fields: ["followerID"])
+    idol: Chef! @connection(fields: ["idolID"])
+}
+
+enum NotificationType {
+    COMMENT
+    CAPTION
+    REMADE
+    REQUEST
+    ACCEPT
+    LIKED
+    COMMENTED
+}
+
+type Notification 
+    @model
+    @key(name: "byReceiver", fields: ["receiverID", "createdAt",], queryField: "notificationsByReceiver")
+    @key(name: "bySender", fields: ["senderID", "postID", "type", ], queryField: "notificationsBySender")
+    @key(name: "byFollow", fields: ["senderID", "receiverID", "type", ], queryField: "notificationsByFollow")
+    {
+    id: ID!
+    createdAt: AWSDateTime!
+    type: NotificationType!
+    text: String
+    senderID: ID!
+    receiverID: ID!
+    postID: ID!
+    sender: Chef! @connection(fields: ["senderID"])
+    post: Post @connection(fields: ["postID"])
+} 
+
+enum PostType {
+    ORIGINAL
+    REMAKE
+}
+
+type PostIngredient {
+    quantity: String!
+    type: String!
+}
+
+type Post 
+    @model
+    @key(name: "byChef", fields: ["chefID", "createdAt"], queryField: "postsByChef")
+    @key(name: "byOriginal", fields: ["originalID", "createdAt"], queryField: "postsByOriginal")
+    @key(name: "byTitle", fields: ["title", "rating"], queryField: "postsByTitle")
+    {
+    id: ID!
+    createdAt: AWSDateTime!
+    type: PostType!
+    title: String!
+    UpperCaseTitle: String
+    caption: String
+    image: [String]
+    serves: Int
+    cook_time: Int
+    rating: Int!
+    n_likes: Int
+    n_comments: Int
+    n_tips: Int
+    location: String
+    language: String
+    procedure: [String]
+    hashtags: [String]
+    postIngredients: [PostIngredient]
+    tip: String
+    originalID: ID!
+    chefID: ID!
+    original: Post @connection(fields: ["originalID"])
+    chef: Chef @connection(fields: ["chefID"])
+}
+
+type Like 
+    @model 
+    @key(fields: ["chefID", "postID"])
+    @key(name: "byPost", fields: ["postID", "createdAt"], queryField: "likesByPost")
+    {
+    id: ID!
+    createdAt: AWSDateTime!
+    chefID: ID!
+    postID: ID!
+    chef: Chef @connection(fields: ["chefID"])
+}
+
+type Save 
+    @model 
+    @key(fields: ["postID", "chefID"])
+    @key(name: "byChef", fields: ["chefID", "createdAt"], queryField: "savesByChef")
+    {
+    id: ID!
+    createdAt: AWSDateTime!
+    chefID: ID!
+    postID: ID!
+    post: Post @connection(fields: ["postID"])
+}
+
+type Comment 
+    @model 
+    @key(name: "byPost", fields: ["postID", "createdAt"], queryField: "commentsByPost")
+    {
+    id: ID!
+    createdAt: AWSDateTime!
+    text: String
+    chefID: ID!
+    postID: ID!
+    chef: Chef @connection(fields: ["chefID"])
+}

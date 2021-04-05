@@ -1,0 +1,12 @@
+{
+  "name": "provecho_beta_v1.7",
+  "displayName": "provecho_beta_v1.7",
+  "expo": {
+    "name": "provecho_beta_v1.7",
+    "slug": "provecho_beta_v1.7",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
